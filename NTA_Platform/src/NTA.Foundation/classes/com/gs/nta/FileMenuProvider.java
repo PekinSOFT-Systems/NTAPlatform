@@ -16,10 +16,10 @@
  * 
  * *****************************************************************************
  *  Project    :   NTA-Basic
- *  Class      :   module-info.java
+ *  Class      :   FileMenuProvider.java
  *  Author     :   Sean Carrick
- *  Created    :   Aug 14, 2021 @ 10:45:38 PM
- *  Modified   :   Aug 14, 2021
+ *  Created    :   Oct 28, 2021 @ 1:15:45 AM
+ *  Modified   :   Oct 28, 2021
  * 
  *  Purpose:     See class JavaDoc comment.
  * 
@@ -27,33 +27,44 @@
  * 
  *  WHEN          BY                   REASON
  *  ------------  -------------------  -----------------------------------------
- *  Aug 14, 2021  Sean Carrick         Initial creation.
+ *  Oct 28, 2021  Sean Carrick         Initial creation.
  * *****************************************************************************
  */
+package com.gs.nta;
 
-open module NTA.Foundation {
-    // JDK Requirements
-    requires java.base;
-    requires java.desktop;
-    requires java.logging;
-    
-    // Project Requirements
-    requires NTA.Utils;
-    requires appframework;
-    requires swing.worker;
-    
-    // Uses Statements
-    uses com.gs.nta.api.MenuItemProvider;
-    uses com.gs.nta.api.MenuProvider;
-    uses com.gs.nta.api.ModuleRegistrar;
-    uses com.gs.nta.api.OptionsPanelProvider;
-    uses com.gs.nta.api.SubMenuProvider;
-    
-    // Exports Packages
-    exports com.gs.nta;
-    
-    // Provides Packages
-    provides com.gs.nta.api.MenuItemProvider with com.gs.nta.ExitMenuItemProvider;
-    provides com.gs.nta.api.MenuProvider with com.gs.nta.FileMenuProvider;
-    provides com.gs.nta.api.SubMenuProvider with com.gs.nta.NewMenuProvider;
+import com.gs.nta.api.MenuProvider;
+
+/**
+ *
+ * @author Sean Carrick &lt;sean at gs-unitedlabs dot com&gt;
+ *
+ * @version 1.0.0
+ * @since 1.0.0
+ */
+public class FileMenuProvider implements MenuProvider {
+
+    public FileMenuProvider () {
+
+    }
+
+    @Override
+    public String getName() {
+        return getText().toLowerCase() + "Menu";
+    }
+
+    @Override
+    public String getText() {
+        return "File";
+    }
+
+    @Override
+    public int getPosition() {
+        return Integer.MIN_VALUE;
+    }
+
+    @Override
+    public int compareTo(MenuProvider o) {
+        return Integer.compare(getPosition(), o.getPosition());
+    }
+
 }

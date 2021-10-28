@@ -35,6 +35,20 @@
  *                                    hyphenated words. The wrap method also no
  *                                    longer breaks a line within the bounds of
  *                                    a word. Only whole words start a new line.
+ *  Oct 28, 2021  Sean Carrick        Added the specialized wrapLogMessage
+ *                                    method that replaces all commas in the
+ *                                    source text with newline and tab characters.
+ *                                    See definition list on the wrap method for
+ *                                    details on why.
+ *                                    Found error in the logic of the
+ *                                    insertTabLeader method. When the rightWord
+ *                                    is a path, such as Java Module Path, it can
+ *                                    be too long to process by the argument test.
+ *                                    Therefore, I added an argument test just
+ *                                    before it, checking if rightWord contains
+ *                                    "path", and turned the original argument
+ *                                    test into an else if block. Seems to be
+ *                                    working pretty good now.
  * *****************************************************************************
  */
 package com.gs.utils;
@@ -276,15 +290,15 @@ public class StringUtils {
     /**
      * This method will take the `source` string and wrap it at the specified
      * `width`.
-     * <p>
+     * 
      * When performing the wrapping of the `source` string, this method first
      * checks to see if there are any newline characters included within it. If
      * there are, the `source` will first be broken into parts at the newline
      * characters. Once that is done, the elements of the created array will be
      * split on the space characters. Once all of this is complete, the string
      * will be rebuilt allowing for wrapping to take place at the specified
-     * `width`, without breaking within a single word.</p>
-     * <p>
+     * `width`, without breaking within a single word.
+     * 
      * Furthermore, this method takes into account any hyphens contained within
      * the `source` string. If the built up line is getting close to the `width`
      * of the requested string and the next word will go beyond the specified
@@ -293,13 +307,25 @@ public class StringUtils {
      * if that portion of the word will fit on the current line. If it will, it
      * will be added to the current line of text. If not, then the entire
      * hyphenated word will be placed at the beginning of the next line of text.
-     * </p>
+     * 
+     * <dl><dt><strong><em>Note Regarding Additional Splits</em></strong></dt>
+     * <dd>When `StringUtils.wrap()` is used for prettifying log output, it is
+     * best to call the specialized method `StringUtils.wrapLogMessage()`. This
+     * overloaded version of `wrap` replaces comma characters with a newline
+     * and tab character. This is due to using `String.format()` to create the
+     * log messages to log the state of `Object`s during debugging. The result
+     * from `toString` typically involves all properties of an `Object` being
+     * strung together separated by only the comma, and without spaces. This
+     * causes some information to not be wrapped properly, which allows for very
+     * long lines, even in the formatted output.</dd></dl>
      *
      * @param source the source string to be wrapped
      * @param width the width at which the `source` string should be wrapped
      * @return the `source` string, properly wrapped at the specified `width`
      * @throws IllegalArgumentException if `source` is `null`, empty, or blank,
      * or if `width` is less than or equal to zero
+     * 
+     * @see #wrapLogMessage(java.lang.String, int) 
      */
     public static String wrap(String source, int width) {
         if (source == null) {
@@ -415,6 +441,61 @@ public class StringUtils {
     }
 
     /**
+     * This method will take the `source` string and wrap it at the specified
+     * `width`.
+     * 
+     * <em>This is a specialized method for use with log messages</em>.
+     * 
+     * The specialized use of this method is specifically for formatting log
+     * message output. The first thing this method does is replace all commas in
+     * the `source` with a `\n\t` character sequence. This is so that the output
+     * from `Object.toString()` will also be formatted by splitting it into 
+     * separate lines. The common output from the `toString` method of any Java
+     * `Object` is to concatenate all of the object's `propertyName=value`s and
+     * separate each property/value pair by only a comma, without a space. This
+     * method, therefore, replaces the commas with the newline/tab sequence to
+     * prevent an object's `toString` output from being extremely long and not
+     * able to be wrapped properly by the `StringUtils.wrap()` method.
+     * 
+     * The other thing that is done by this method is to replace all 
+     * semicolon/space character combinations with a newline character (`\n`).
+     * Typically when writing log messages, developers will split values they
+     * are logging by using a semicolon/space combination. Therefore, this method
+     * also splits the `source` text on that character combination to better 
+     * format the log messages.
+     * 
+     * The body of this method is simply:
+     * 
+     * ```java
+     * public static String wrapLogMessage(String source, int width) {
+     *     return wrap(source.replace(",", "\n\t").replace("; ", "\n"), width);
+     * }
+     * ```
+     * 
+     * Therefore, the `wrap` method is still used and this method really only
+     * prepares the `source` string for proper wrapping by the `wrap` method.
+     * 
+     * @param source
+     * @param width
+     * @return the `source` string, properly wrapped for log message output, to
+     * the specified `width`
+     * @throws IllegalArgumentException if `source` is `null`, empty, or blank,
+     * or if `width` is less than or equal to zero
+     * 
+     * @see #wrap(java.lang.String, int) 
+     */
+    public static String wrapLogMessage(String source, int width) {
+        if (source == null || source.isBlank() || source.isEmpty()) {
+            throw new IllegalArgumentException("null, blank, or empty source");
+        }
+        if (width <= 0) {
+            throw new IllegalArgumentException("width less than or equal to zero");
+        }
+        
+        return wrap(source.replace(",", "\n\t").replace("; ", "\n"), width);
+    }
+    
+    /**
      * Inserts a tab leader with the specified character as the leader.
      * <p>
      * A tab leader is such that a character is inserted between two words or
@@ -457,7 +538,9 @@ public class StringUtils {
         } else if (rightWord.isEmpty()) {
             throw new IllegalArgumentException("empty rightWord");
         }
-        if (rightMargin < (leftWord.length() + rightWord.length() + 3)) {
+        if (leftWord.toLowerCase().contains("path")) {
+            rightWord = splitOnPathSeparator(rightWord);
+        } else if (rightMargin < (leftWord.length() + rightWord.length() + 2)) {
             throw new IllegalArgumentException("insufficient space to process");
         }
         if (leader != ' ' && leader != '-' && leader != '.' && leader != '_') {
@@ -466,6 +549,10 @@ public class StringUtils {
 
         int space = rightMargin - (leftWord.length() + rightWord.length());
         return leftWord + repeatChar(leader, space) + rightWord;
+    }
+    
+    private static String splitOnPathSeparator(String path) {
+        return (path.replace(System.getProperty("path.separator"), "\n\t"));
     }
 
     private static String repeatChar(char toRepeat, int times) {

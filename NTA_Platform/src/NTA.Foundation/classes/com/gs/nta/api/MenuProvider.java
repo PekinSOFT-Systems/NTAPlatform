@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  * *****************************************************************************
- *  Project    :   NTA.Foundation
- *  Class      :   Menus.java
+ *  Project    :   NTA-Basic
+ *  Class      :   MenuProvider.java
  *  Author     :   Sean Carrick
- *  Created    :   Oct 27, 2021 @ 9:28:04 PM
- *  Modified   :   Oct 27, 2021
+ *  Created    :   Oct 28, 2021 @ 1:09:26 AM
+ *  Modified   :   Oct 28, 2021
  * 
  *  Purpose:     See class JavaDoc comment.
  * 
@@ -27,27 +27,43 @@
  * 
  *  WHEN          BY                   REASON
  *  ------------  -------------------  -----------------------------------------
- *  Oct 27, 2021  Sean Carrick         Initial creation.
+ *  Oct 28, 2021  Sean Carrick         Initial creation.
  * *****************************************************************************
  */
 package com.gs.nta.api;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 /**
+ * The `MenuProvider` interface allows modules to provide a top-level menu to 
+ * the Foundation module's menu bar.
  *
  * @author Sean Carrick &lt;sean at gs-unitedlabs dot com&gt;
  *
  * @version 1.0.0
  * @since 1.0.0
  */
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface Menus {
-    Menu[] value();
+public interface MenuProvider extends Comparable<MenuProvider> {
+    
+    /**
+     * Retrieves the name for the generated `JMenu`. Typically, the name of the
+     * menu is the text of the menu with "Menu" appended to the end of it. This
+     * is the standard that Northwind Traders follows.
+     * 
+     * @return the name for the generated menu
+     */
+    public String getName();
+    
+    /**
+     * The text that is displayed on the generated menu.
+     * 
+     * @return the menu text
+     */
+    public String getText();
+    
+    /**
+     * The position on the menu bar that the generated menu should occupy.
+     * 
+     * @return the menu's position on the menu bar
+     */
+    public int getPosition();
+    
 }

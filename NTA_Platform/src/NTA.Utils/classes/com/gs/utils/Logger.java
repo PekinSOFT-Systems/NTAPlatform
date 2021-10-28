@@ -60,6 +60,26 @@
  *                                     application has the property set for log
  *                                     formatting and calls the write method in
  *                                     the appropriate manner.
+ *  Oct 28, 2021  Sean Carrick         Added a second write statement to the
+ *                                     writeMessage method that inserts a new
+ *                                     line into the file. Also added the ability
+ *                                     to set the formatting flag for the logger
+ *                                     and to change the logging level for the
+ *                                     current Logger instance. Modified the wrap
+ *                                     and divider widths from 80 to 65 for 
+ *                                     cleaner printouts. Updated version to
+ *                                     Version 3.7. 
+ *                                     Tested Logger.critical and found all kinds
+ *                                     of issues that I fixed. I was appending
+ *                                     each datapoint to the msg variable twice.
+ *                                     There were issues with items such as
+ *                                     Module Path being way to long to process,
+ *                                     see change long in StringUtils. Anyway, I
+ *                                     spent about an hour fixing the critical
+ *                                     method and it is working splendidly.
+ *                                     ******************************************
+ *                                     * Still need to get app modules printing *
+ *                                     ******************************************
  * *****************************************************************************
  */
 package com.gs.utils;
@@ -133,8 +153,8 @@ import org.jdesktop.application.ResourceMap;
  *
  * @author Sean Carrick &lt;sean at gs-unitedlabs dot com&gt;
  *
- * @version 3.6.12
- * @since 1.0.0
+ * @version 3.7
+ * @since 1.0
  */
 public class Logger {
 
@@ -186,7 +206,7 @@ public class Logger {
      */
     public static final int CRITICAL = 6;
 
-    private static final String DIVIDER = "-".repeat(80);
+    private static final String DIVIDER = "-".repeat(65);
 
     private final String tempLogPath;
     private static Logger logger; // The singleton Logger object.
@@ -196,6 +216,7 @@ public class Logger {
     private String errLogPath;
     private FileWriter err; // The file to which error message will be written.
     private int level;      // Level at which to log messages.
+    private boolean formattedOutput = false;
 
     private Logger(Application application, int level) {
         app = application;
@@ -412,7 +433,7 @@ public class Logger {
             msg.append(")\n");
         }
 
-        msg.append("Thread ID: ").append(record.getThreadID());
+        msg.append("Thread ID: ").append(record.getThreadID()).append("\n");
 
         msg.append(DIVIDER).append("\nDetail Message: ");
         msg.append(record.getMessage()).append("\n").append(DIVIDER).append("\n");
@@ -428,100 +449,85 @@ public class Logger {
 //        }
         msg.append(DIVIDER).append("\n");
 
-        int tabWidth = 60;
+        int tabWidth = 70;
         java.util.Properties p = System.getProperties();
         msg.append("\nSystem Information:\n\n");
-        msg.append("OS").append(StringUtils.insertTabLeader("OS",
+        msg.append(StringUtils.insertTabLeader("OS",
                 p.getProperty("os.name"), tabWidth, '.'));
-        msg.append(p.getProperty("os.name")).append("\n");
-        msg.append("OS Version").append(StringUtils.insertTabLeader("OS Version",
+        msg.append("\n");
+        msg.append(StringUtils.insertTabLeader("OS Version",
                 p.getProperty("os.version"), tabWidth, '.'));
-        msg.append(p.getProperty("os.version")).append("\n");
-        msg.append("Architecture").append(StringUtils.insertTabLeader(
+        msg.append("\n");
+        msg.append(StringUtils.insertTabLeader(
                 "Architecture", p.getProperty("os.arch"), tabWidth, '.'));
-        msg.append(p.getProperty("os.arch")).append("\n\n").append(DIVIDER);
+        msg.append("\n\n").append(DIVIDER);
 
         msg.append("\nJava Information:").append("\n\n");
-        msg.append("Java Home");
         msg.append(StringUtils.insertTabLeader("Java Home",
                 p.getProperty("java.home"), tabWidth, '.'));
-        msg.append(p.getProperty("java.home")).append("\n");
-        msg.append("Java Virtual Machine").append(StringUtils.insertTabLeader(
-                "Java Virtual Machine", p.getProperty("java.vm.name"), tabWidth,
+        msg.append("\n");
+        msg.append(StringUtils.insertTabLeader(
+                "Virtual Machine", p.getProperty("java.vm.name"), tabWidth,
                 '.'));
-        msg.append(p.getProperty("java.vm.name")).append("\nJava VM Version");
-        msg.append(StringUtils.insertTabLeader("Java VM Version", p.getProperty(
+        msg.append("\n");
+        msg.append(StringUtils.insertTabLeader("VM Version", p.getProperty(
                 "java.vm.version"), tabWidth, '.'));
-        msg.append(p.getProperty("java.vm.version")).append("\nJava Runtime");
-        msg.append(StringUtils.insertTabLeader("Java Runtime", p.getProperty(
+        msg.append("\n");
+        msg.append(StringUtils.insertTabLeader("Runtime", p.getProperty(
                 "java.runtime.name"), tabWidth, '.'));
-        msg.append(p.getProperty("java.runtime.name")).append("\n");
-        msg.append("Java Runtime Version");
-        msg.append(StringUtils.insertTabLeader("Java Runtime Version",
+        msg.append("\n");
+        msg.append(StringUtils.insertTabLeader("Runtime Version",
                 p.getProperty("java.runtime.version"), tabWidth, '.'));
-        msg.append(p.getProperty("java.runtime.version")).append("\n");
-        msg.append("Java Secification");
-        msg.append(StringUtils.insertTabLeader("Java Specification",
+        msg.append("\n");
+        msg.append(StringUtils.insertTabLeader("Specification",
                 p.getProperty("java.specification.name"), tabWidth, '.'));
-        msg.append(p.getProperty("java.specification.name")).append("\n");
-        msg.append("Java Secification Version");
-        msg.append(StringUtils.insertTabLeader("Java Specification Version",
+        msg.append("\n");
+        msg.append(StringUtils.insertTabLeader("Specification Version",
                 p.getProperty("java.specification.version"), tabWidth, '.'));
-        msg.append(p.getProperty("java.specification.version")).append("\n");
-        msg.append("Java Vendor");
-        msg.append(StringUtils.insertTabLeader("Java Vendor",
+        msg.append("\n");
+        msg.append(StringUtils.insertTabLeader("Vendor",
                 p.getProperty("java.vendor"), tabWidth, '.'));
-        msg.append(p.getProperty("java.vendor")).append("\n");
-        msg.append("Java Version");
-        msg.append(StringUtils.insertTabLeader("Java Version",
+        msg.append("\n");
+        msg.append(StringUtils.insertTabLeader("Version",
                 p.getProperty("java.version"), tabWidth, '.'));
-        msg.append(p.getProperty("java.version")).append("\n");
-        msg.append("Java Version Date");
-        msg.append(StringUtils.insertTabLeader("Java Version Date",
+        msg.append("\n");
+        msg.append(StringUtils.insertTabLeader("Version Date",
                 p.getProperty("java.version.date"), tabWidth, '.'));
-        msg.append(p.getProperty("java.version.date")).append("\n");
-        msg.append("Java Class Path");
-        msg.append(StringUtils.insertTabLeader("Java Class Path",
-                p.getProperty("java.class.path"), tabWidth, '.'));
-        msg.append(p.getProperty("java.class.path")).append("\n");
-        msg.append("Java Class Version");
-        msg.append(StringUtils.insertTabLeader("Java Class Version",
+        msg.append("\n");
+        msg.append(StringUtils.insertTabLeader("Class Path",
+                (p.getProperty("java.class.path").equals("")) ? "UNKNOWN" 
+                        : p.getProperty("java.class.path"), tabWidth, '.'));
+        msg.append("\n");
+        msg.append(StringUtils.insertTabLeader("Class Version",
                 p.getProperty("java.class.version"), tabWidth, '.'));
-        msg.append(p.getProperty("java.class.Version")).append("\n");
-        msg.append("Java Library Path");
-        msg.append(StringUtils.insertTabLeader("Java Library Path",
-                p.getProperty("java.library.path"), tabWidth, '.'));
-        msg.append(p.getProperty("java.library.path")).append("\n");
-        msg.append("JDK Debug");
+        msg.append("\n");
+        msg.append(StringUtils.insertTabLeader("Library Path",
+                (p.getProperty("java.library.path").equals("")) ? "UNKNOWN" 
+                        : p.getProperty("java.library.path"), tabWidth, '.'));
+        msg.append("\n");
         msg.append(StringUtils.insertTabLeader("JDK Debug",
                 p.getProperty("jdk.debug"), tabWidth, '.'));
-        msg.append(p.getProperty("jdk.debug")).append("\n");
-        msg.append("JDK Module Path");
+        msg.append("\n");
         msg.append(StringUtils.insertTabLeader("JDK Module Path",
                 p.getProperty("jdk.module.path"), tabWidth, '.'));
-        msg.append(p.getProperty("jdk.module.path")).append("\n");
+        msg.append("\n");
 
         msg.append(DIVIDER).append("\nUser Information:").append("\n\n");
-        msg.append("User Name");
         msg.append(StringUtils.insertTabLeader("User Name",
                 p.getProperty("user.name"), tabWidth, '.'));
-        msg.append(p.getProperty("user.name")).append("\n");
-        msg.append("User Home");
+        msg.append("\n");
         msg.append(StringUtils.insertTabLeader("User Home",
                 p.getProperty("user.home"), tabWidth, '.'));
-        msg.append(p.getProperty("user.home")).append("\n");
-        msg.append("User Directory");
+        msg.append("\n");
         msg.append(StringUtils.insertTabLeader("User Directory",
                 p.getProperty("user.dir"), tabWidth, '.'));
-        msg.append(p.getProperty("user.dir")).append("\n");
-        msg.append("User Country");
+        msg.append("\n");
         msg.append(StringUtils.insertTabLeader("User Country",
                 p.getProperty("user.country"), tabWidth, '.'));
-        msg.append(p.getProperty("user.country")).append("\n");
-        msg.append("User Language");
+        msg.append("\n");
         msg.append(StringUtils.insertTabLeader("User Language",
                 p.getProperty("user.language"), tabWidth, '.'));
-        msg.append(p.getProperty("user.language")).append("\n");
+        msg.append("\n");
 
         msg.append(DIVIDER).append("\nException Information:\n\n");
         msg.append("Exception Message: ").append(record.getThrown().getMessage());
@@ -809,6 +815,34 @@ public class Logger {
     public int getLevel() {
         return level;
     }
+    
+    /**
+     * Provides a way to change the current logging level.
+     * 
+     * @param level the new logging level
+     */
+    public void setLevel(int level) {
+        this.level = level;
+    }
+    
+    /**
+     * Determines whether the output to the log file should format the log
+     * entries.
+     * 
+     * @return `true` if output is formatted
+     */
+    public boolean isFormattedOutput() {
+        return formattedOutput;
+    }
+    
+    /**
+     * Provides a way to set whether or not the log entries should be formatted.
+     * 
+     * @param formattedOutput `true` to format log entries
+     */
+    public void setFormattedOutput(boolean formattedOutput) {
+        this.formattedOutput = formattedOutput;
+    }
 
     /**
      * Provide a `LogRecord` to create a informational message in the log file.
@@ -915,7 +949,9 @@ public class Logger {
      */
     private void writeMessage(String message) {
         try {
+            message = (formattedOutput) ? formatLogMessage(message) : message;
             log.write(message);
+            log.write("\n");
             log.flush();
         } catch (IOException e) {
             String msg = String.format("Unable to write message to log file %s"
@@ -932,7 +968,7 @@ public class Logger {
      * @return the formatted message
      */
     private String formatLogMessage(String msg) {
-        return StringUtils.wrap(msg, 80) + "\n" + DIVIDER;
+        return StringUtils.wrapLogMessage(msg, 65) + "\n" + DIVIDER;
     }
 
 }

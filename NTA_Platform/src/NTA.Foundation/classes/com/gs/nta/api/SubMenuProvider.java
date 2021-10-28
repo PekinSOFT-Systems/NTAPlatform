@@ -16,10 +16,10 @@
  * 
  * *****************************************************************************
  *  Project    :   NTA-Basic
- *  Class      :   module-info.java
+ *  Class      :   SubMenuProvider.java
  *  Author     :   Sean Carrick
- *  Created    :   Aug 14, 2021 @ 10:45:38 PM
- *  Modified   :   Aug 14, 2021
+ *  Created    :   Oct 28, 2021 @ 1:25:25 AM
+ *  Modified   :   Oct 28, 2021
  * 
  *  Purpose:     See class JavaDoc comment.
  * 
@@ -27,33 +27,31 @@
  * 
  *  WHEN          BY                   REASON
  *  ------------  -------------------  -----------------------------------------
- *  Aug 14, 2021  Sean Carrick         Initial creation.
+ *  Oct 28, 2021  Sean Carrick         Initial creation.
  * *****************************************************************************
  */
+package com.gs.nta.api;
 
-open module NTA.Foundation {
-    // JDK Requirements
-    requires java.base;
-    requires java.desktop;
-    requires java.logging;
+/**
+ * Allows modules to add a submenu to an existing menu.
+ *
+ * @author Sean Carrick &lt;sean at gs-unitedlabs dot com&gt;
+ *
+ * @version 1.0.0
+ * @since 1.0.0
+ */
+public interface SubMenuProvider extends Comparable<SubMenuProvider> {
     
-    // Project Requirements
-    requires NTA.Utils;
-    requires appframework;
-    requires swing.worker;
+    public String getName();
     
-    // Uses Statements
-    uses com.gs.nta.api.MenuItemProvider;
-    uses com.gs.nta.api.MenuProvider;
-    uses com.gs.nta.api.ModuleRegistrar;
-    uses com.gs.nta.api.OptionsPanelProvider;
-    uses com.gs.nta.api.SubMenuProvider;
+    public String getText();
     
-    // Exports Packages
-    exports com.gs.nta;
+    public String getOwner();
+     
+    public int getPosition();
     
-    // Provides Packages
-    provides com.gs.nta.api.MenuItemProvider with com.gs.nta.ExitMenuItemProvider;
-    provides com.gs.nta.api.MenuProvider with com.gs.nta.FileMenuProvider;
-    provides com.gs.nta.api.SubMenuProvider with com.gs.nta.NewMenuProvider;
+    public boolean separatorBefore();
+    
+    public boolean separatorAfter();
+
 }
