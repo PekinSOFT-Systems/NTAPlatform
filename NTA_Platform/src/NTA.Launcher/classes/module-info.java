@@ -34,6 +34,7 @@
 open module NTA.Launcher {
     // JDK Requirements
     requires java.base;
+    requires java.desktop;
     
     requires NTA.Foundation;
     requires appframework;

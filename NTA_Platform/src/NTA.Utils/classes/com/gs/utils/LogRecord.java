@@ -117,7 +117,7 @@ public class LogRecord {
     private long sequenceNumber;
     private final String sourceClassName;
     private String sourceMethodName;
-    private int threadID;
+    private long threadID;
     private Throwable thrown;
 
     /**
@@ -324,7 +324,7 @@ public class LogRecord {
      *
      * @return the thread's ID
      */
-    public int getThreadID() {
+    public long getThreadID() {
         return threadID;
     }
 
@@ -333,7 +333,7 @@ public class LogRecord {
      *
      * @param threadID the thread's ID
      */
-    public void setThreadID(int threadID) {
+    public void setThreadID(long threadID) {
         this.threadID = threadID;
     }
 
