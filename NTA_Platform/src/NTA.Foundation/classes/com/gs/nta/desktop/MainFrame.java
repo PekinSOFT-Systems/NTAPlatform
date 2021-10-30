@@ -32,8 +32,14 @@
  */
 package com.gs.nta.desktop;
 
+import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeEvent;
+import javax.swing.Icon;
+import javax.swing.Timer;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.FrameView;
+import org.jdesktop.application.ResourceMap;
+import org.jdesktop.application.TaskMonitor;
 
 /**
  *
@@ -48,6 +54,63 @@ public class MainFrame extends FrameView {
         super(application);
         
         initComponents();
+        
+        // Status bar initialization - message timeout, idle icon, and busy
+        //+ animation, etc.
+        ResourceMap map = application.getContext().getResourceMap(MainFrame.class);
+        int messageTimeout = map.getInteger("statusBar.messageTimeout");
+        messageTimer = new Timer(messageTimeout, (ActionEvent e) -> {
+            statusMessageLabel.setText("");
+        });
+        messageTimer.setRepeats(false);
+        
+        int busyAnimationRate = map.getInteger("statusBar.busyAnimationRate");
+        for (int i = 0; i < busyIcons.length; i++) {
+            busyIcons[i] = map.getIcon("statusBar.busyIcons[" + i + "]");
+        }
+        busyIconTimer = new Timer(busyAnimationRate, (ActionEvent e) -> {
+            busyIconIndex = (busyIconIndex + 1) % busyIcons.length;
+            animationIconLabel.setIcon(busyIcons[busyIconIndex]);
+        });
+        idleIcon = map.getIcon("statusBar.idleIcon");
+        animationIconLabel.setIcon(idleIcon);
+        progressBar.setVisible(false);
+        
+        // Connecting action tasks to status bar via the Application's TaskMonitor
+        TaskMonitor taskMonitor = application.getContext().getTaskMonitor();
+        taskMonitor.addPropertyChangeListener((PropertyChangeEvent evt) -> {
+            String propertyName = evt.getPropertyName();
+            
+            switch (propertyName) {
+                case "started":
+                    if (!busyIconTimer.isRunning()) {
+                        animationIconLabel.setIcon(busyIcons[0]);
+                        busyIconIndex = 0;
+                        busyIconTimer.start();
+                    }
+                    progressBar.setVisible(true);
+                    progressBar.setIndeterminate(true);
+                    break;
+                case "done":
+                    busyIconTimer.stop();
+                    animationIconLabel.setIcon(idleIcon);
+                    progressBar.setVisible(false);
+                    progressBar.setValue(0);
+                    break;
+                case "message":
+                    String text = (String) evt.getNewValue();
+                    statusMessageLabel.setText(text == null ? "" : text);
+                    messageTimer.restart();
+                    break;
+                case "progress":
+                    int value = (Integer) evt.getNewValue();
+                    progressBar.setVisible(true);
+                    progressBar.setIndeterminate(false);
+                    progressBar.setValue(value);
+            }
+        });
+        
+        messageTimer.restart();
     }
 
     /**
@@ -70,6 +133,7 @@ public class MainFrame extends FrameView {
 
         menuBar.setName("menuBar"); // NOI18N
 
+        toolBar.setFloatable(false);
         toolBar.setRollover(true);
         toolBar.setName("toolBar"); // NOI18N
 
@@ -83,23 +147,29 @@ public class MainFrame extends FrameView {
         );
         contentPanelLayout.setVerticalGroup(
             contentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 539, Short.MAX_VALUE)
+            .addGap(0, 559, Short.MAX_VALUE)
         );
 
-        statusPanel.setMaximumSize(new java.awt.Dimension(32767, 20));
-        statusPanel.setMinimumSize(new java.awt.Dimension(100, 20));
+        statusPanel.setMaximumSize(new java.awt.Dimension(32767, 30));
+        statusPanel.setMinimumSize(new java.awt.Dimension(100, 30));
         statusPanel.setName("statusPanel"); // NOI18N
-        statusPanel.setPreferredSize(new java.awt.Dimension(100, 20));
+        statusPanel.setPreferredSize(new java.awt.Dimension(873, 30));
 
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance().getContext().getResourceMap(MainFrame.class);
         statusMessageLabel.setText(resourceMap.getString("statusMessageLabel.text")); // NOI18N
         statusMessageLabel.setName("statusMessageLabel"); // NOI18N
 
-        animationIconLabel.setIcon(resourceMap.getIcon("animationIconLabel.icon")); // NOI18N
+        animationIconLabel.setMaximumSize(new java.awt.Dimension(16, 16));
+        animationIconLabel.setMinimumSize(new java.awt.Dimension(16, 16));
         animationIconLabel.setName("animationIconLabel"); // NOI18N
+        animationIconLabel.setPreferredSize(new java.awt.Dimension(16, 16));
 
+        progressBar.setMaximumSize(new java.awt.Dimension(32678, 16));
+        progressBar.setMinimumSize(new java.awt.Dimension(16, 16));
         progressBar.setName("progressBar"); // NOI18N
+        progressBar.setPreferredSize(new java.awt.Dimension(146, 16));
 
+        versionLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         versionLabel.setText(resourceMap.getString("versionLabel.text")); // NOI18N
         versionLabel.setName("versionLabel"); // NOI18N
 
@@ -108,25 +178,26 @@ public class MainFrame extends FrameView {
         statusPanelLayout.setHorizontalGroup(
             statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(statusPanelLayout.createSequentialGroup()
-                .addComponent(statusMessageLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 423, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(versionLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 270, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addContainerGap()
+                .addComponent(statusMessageLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 417, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(versionLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 240, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
                 .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(animationIconLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(animationIconLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         statusPanelLayout.setVerticalGroup(
             statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(statusPanelLayout.createSequentialGroup()
-                .addGroup(statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(statusMessageLabel)
-                    .addComponent(animationIconLabel)
-                    .addComponent(versionLabel))
-                .addGap(0, 1, Short.MAX_VALUE))
-            .addGroup(statusPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(progressBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, statusPanelLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(progressBar, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(animationIconLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(statusMessageLabel)
+                        .addComponent(versionLabel)))
                 .addContainerGap())
         );
 
@@ -146,4 +217,10 @@ public class MainFrame extends FrameView {
     private javax.swing.JToolBar toolBar;
     private javax.swing.JLabel versionLabel;
     // End of variables declaration//GEN-END:variables
+
+    private final Timer messageTimer;
+    private final Timer busyIconTimer;
+    private final Icon idleIcon;
+    private final Icon[] busyIcons = new Icon[15];
+    private int busyIconIndex = 0;
 }

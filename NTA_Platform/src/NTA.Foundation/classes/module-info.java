@@ -38,22 +38,29 @@ open module NTA.Foundation {
     requires java.logging;
     
     // Project Requirements
-    requires NTA.Utils;
     requires appframework;
     requires swing.worker;
     
     // Uses Statements
-    uses com.gs.nta.api.MenuItemProvider;
+    uses com.gs.nta.api.AboutPanelProvider;
+    uses com.gs.nta.api.ActionCommandProvider;
     uses com.gs.nta.api.MenuProvider;
     uses com.gs.nta.api.ModuleRegistrar;
     uses com.gs.nta.api.OptionsPanelProvider;
     uses com.gs.nta.api.SubMenuProvider;
+    uses com.gs.nta.api.ToolbarButtonProvider;
     
     // Exports Packages
     exports com.gs.nta;
+    exports com.gs.nta.api;
+    exports com.gs.nta.utils;
     
     // Provides Packages
-    provides com.gs.nta.api.MenuItemProvider with com.gs.nta.ExitMenuItemProvider;
-    provides com.gs.nta.api.MenuProvider with com.gs.nta.FileMenuProvider;
-    provides com.gs.nta.api.SubMenuProvider with com.gs.nta.NewMenuProvider;
+    provides com.gs.nta.api.ActionCommandProvider with com.gs.nta.menus.ExitActionCommand,
+            com.gs.nta.menus.OptionsActionCommand, com.gs.nta.menus.AboutActionCommand;
+    provides com.gs.nta.api.MenuProvider with com.gs.nta.menus.FileMenuProvider,
+            com.gs.nta.menus.EditMenuProvider, com.gs.nta.menus.HelpMenuProvider,
+            com.gs.nta.menus.ToolsMenuProvider, com.gs.nta.menus.ViewMenuProvider;
+    provides com.gs.nta.api.OptionsPanelProvider with com.gs.nta.desktop.panels.ProxyOptionsPanel;
+    provides com.gs.nta.api.SubMenuProvider with com.gs.nta.menus.NewMenuProvider;
 }

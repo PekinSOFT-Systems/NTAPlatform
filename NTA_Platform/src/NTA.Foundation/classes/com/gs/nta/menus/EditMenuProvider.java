@@ -16,9 +16,9 @@
  * 
  * *****************************************************************************
  *  Project    :   NTA-Basic
- *  Class      :   module-info.java
+ *  Class      :   EditMenuProvider.java
  *  Author     :   Sean Carrick
- *  Created    :   Oct 28, 2021 @ 12:10:02 AM
+ *  Created    :   Oct 28, 2021 @ 3:05:33 PM
  *  Modified   :   Oct 28, 2021
  * 
  *  Purpose:     See class JavaDoc comment.
@@ -30,25 +30,48 @@
  *  Oct 28, 2021  Sean Carrick         Initial creation.
  * *****************************************************************************
  */
+package com.gs.nta.menus;
 
-open module NTA.Accounting {
-    requires java.base;
-    requires java.desktop;
-    requires appframework;
-    requires swing.worker;
-    requires NTA.Foundation;
+import com.gs.nta.api.MenuProvider;
+import org.jdesktop.application.Application;
+
+/**
+ *
+ * @author Sean Carrick &lt;sean at gs-unitedlabs dot com&gt;
+ *
+ * @version 1.0.0
+ * @since 1.0.0
+ */
+public class EditMenuProvider implements MenuProvider {
+
+    public EditMenuProvider () {
+
+    }
+
+    @Override
+    public String getName() {
+        return "editMenu";
+    }
+
+    @Override
+    public int getPosition() {
+        return Integer.MIN_VALUE + 1;
+    }
     
-    uses com.gs.nta.api.AboutPanelProvider;
-    uses com.gs.nta.api.ActionCommandProvider;
-    uses com.gs.nta.api.MenuProvider;
-    uses com.gs.nta.api.ModuleRegistrar;
-    uses com.gs.nta.api.OptionsPanelProvider;
-    uses com.gs.nta.api.SubMenuProvider;
     
-    provides com.gs.nta.api.AboutPanelProvider 
-            with com.gs.nta.accounting.desktop.AccountingAboutPanelProvider;
-    provides com.gs.nta.api.MenuProvider 
-            with com.gs.nta.accounting.menus.ManageMenuProvider;
-    provides com.gs.nta.api.OptionsPanelProvider 
-            with com.gs.nta.accounting.options.AccountingOptionsPanel;
+
+    @Override
+    public int compareTo(MenuProvider o) {
+        return Integer.compare(getPosition(), o.getPosition());
+    }
+
+    @Override
+    public String getText() {
+        return Application
+                .getInstance()
+                .getContext()
+                .getResourceMap(getClass())
+                .getString("text");
+    }
+
 }
