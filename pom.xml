@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.gs</groupId>
+        <artifactId>TestModularProject</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>NTAPlatform</artifactId>
+    <packaging>pom</packaging>
+    <modules>
+        <module>NTA.Accounting</module>
+        <module>NTA.Customers</module>
+        <module>NTA.Employees</module>
+        <module>NTA.Foundation</module>
+        <module>NTA.Launcher</module>
+        <module>NTA.Ledger</module>
+        <module>NTA.Loads</module>
+        <module>NTA.Payables</module>
+        <module>NTA.Payroll</module>
+        <module>NTA.Receivables</module>
+        <module>NTA.Reporting.General</module>
+        <module>NTA.Service</module>
+        <module>NTA.Vehicles</module>
+        <module>NTA.Bug.Reporter</module>
+    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>org.jdesktop</groupId>
+            <artifactId>appframework</artifactId>
+            <version>1.0.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.swinglabs</groupId>
+            <artifactId>swingx</artifactId>
+            <version>1.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jdesktop</groupId>
+            <artifactId>beansbinding</artifactId>
+            <version>1.2.1</version>
+        </dependency>
+    </dependencies>
+</project>
