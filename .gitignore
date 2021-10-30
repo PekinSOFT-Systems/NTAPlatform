@@ -10,6 +10,9 @@
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
+# Documentation 
+/NTA_Platform/dox/
+
 # Package Files #
 *.jar
 *.war
@@ -21,3 +24,15 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+/NTA_Platform/NTA.Foundation/build/
+/NTA_Platform/NTA.Launcher/build/
+/NTA_Platform/NTA.Utils/nbproject/private/
+/NTA_Platform/NTA.API/nbproject/private/
+/NTA_Platform/NTA.Foundation/nbproject/private/
+/NTA_Platform/NTA.API/build/
+/NTA_Platform/NTA.API/dist/
+/NTA_Platform/NTA.Foundation/dist/
+/NTA_Platform/NTA.Launcher/dist/
+/NTA_Platform/dist/
+/NTA_Platform/build/
+/NTA_Platform/nbproject/private/
