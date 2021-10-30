@@ -16,9 +16,9 @@
  * 
  * *****************************************************************************
  *  Project    :   NTA-Basic
- *  Class      :   module-info.java
+ *  Class      :   ToolbarButtonProvider.java
  *  Author     :   Sean Carrick
- *  Created    :   Oct 28, 2021 @ 12:10:02 AM
+ *  Created    :   Oct 28, 2021 @ 10:06:43 PM
  *  Modified   :   Oct 28, 2021
  * 
  *  Purpose:     See class JavaDoc comment.
@@ -30,25 +30,27 @@
  *  Oct 28, 2021  Sean Carrick         Initial creation.
  * *****************************************************************************
  */
+package com.gs.nta.api;
 
-open module NTA.Accounting {
-    requires java.base;
-    requires java.desktop;
-    requires appframework;
-    requires swing.worker;
-    requires NTA.Foundation;
+/**
+ *
+ * @author Sean Carrick &lt;sean at gs-unitedlabs dot com&gt;
+ *
+ * @version 1.0.0
+ * @since 1.0.0
+ */
+public interface ToolbarButtonProvider extends Comparable {
     
-    uses com.gs.nta.api.AboutPanelProvider;
-    uses com.gs.nta.api.ActionCommandProvider;
-    uses com.gs.nta.api.MenuProvider;
-    uses com.gs.nta.api.ModuleRegistrar;
-    uses com.gs.nta.api.OptionsPanelProvider;
-    uses com.gs.nta.api.SubMenuProvider;
+    public String getName();
     
-    provides com.gs.nta.api.AboutPanelProvider 
-            with com.gs.nta.accounting.desktop.AccountingAboutPanelProvider;
-    provides com.gs.nta.api.MenuProvider 
-            with com.gs.nta.accounting.menus.ManageMenuProvider;
-    provides com.gs.nta.api.OptionsPanelProvider 
-            with com.gs.nta.accounting.options.AccountingOptionsPanel;
+    public String getTextOverride();
+    
+    public String getMethodName();
+    
+    public int getPosition();
+    
+    public boolean separatorBefore();
+    
+    public boolean separatorAfter();
+
 }

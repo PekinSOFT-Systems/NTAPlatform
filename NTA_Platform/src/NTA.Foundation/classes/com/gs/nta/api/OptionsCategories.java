@@ -40,8 +40,10 @@ package com.gs.nta.api;
  * @since 1.0.0
  */
 public enum OptionsCategories {
-    GENERAL,
     ACCOUNTING,
+    GENERAL,
     INTERFACE,
-    MISCELLANEOUS;
+    MISCELLANEOUS,
+    REPORTS,
+    SCHEDULING;
 }

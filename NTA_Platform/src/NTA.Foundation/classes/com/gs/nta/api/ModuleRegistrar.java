@@ -48,15 +48,27 @@ package com.gs.nta.api;
  * @version 1.0.0
  * @since 1.0.0
  */
-public interface ModuleRegistrar {
+public abstract class ModuleRegistrar {
 
     /**
      * Registers a module into the Platform application. Once registered, the
      * module will be loaded and available for use within the Platform
      * application.
-     * 
-     * @return the module name
      */
-    public String register();
+    private final void register() {
+        
+    }
+    
+    /**
+     * Retrieves the module's name for registration.
+     * 
+     * *Note*: The value of this method will be used for the module's About
+     * panel title, so it needs to be short and to the point.
+     * 
+     * @return the name of the module
+     */
+    abstract protected String getName();
+    
+    abstract protected AboutPanelProvider getAboutPanel();
     
 }

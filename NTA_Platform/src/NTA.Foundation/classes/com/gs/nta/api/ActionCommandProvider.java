@@ -16,9 +16,9 @@
  * 
  * *****************************************************************************
  *  Project    :   NTA-Basic
- *  Class      :   module-info.java
+ *  Class      :   ActionCommandProvider.java
  *  Author     :   Sean Carrick
- *  Created    :   Oct 28, 2021 @ 12:10:02 AM
+ *  Created    :   Oct 28, 2021 @ 1:35:17 AM
  *  Modified   :   Oct 28, 2021
  * 
  *  Purpose:     See class JavaDoc comment.
@@ -30,25 +30,37 @@
  *  Oct 28, 2021  Sean Carrick         Initial creation.
  * *****************************************************************************
  */
+package com.gs.nta.api;
 
-open module NTA.Accounting {
-    requires java.base;
-    requires java.desktop;
-    requires appframework;
-    requires swing.worker;
-    requires NTA.Foundation;
+import java.util.Comparator;
+
+/**
+ *
+ * @author Sean Carrick &lt;sean at gs-unitedlabs dot com&gt;
+ *
+ * @version 1.0.0
+ * @since 1.0.0
+ */
+public interface ActionCommandProvider extends Comparable<ActionCommandProvider> {
+    public String getName();
     
-    uses com.gs.nta.api.AboutPanelProvider;
-    uses com.gs.nta.api.ActionCommandProvider;
-    uses com.gs.nta.api.MenuProvider;
-    uses com.gs.nta.api.ModuleRegistrar;
-    uses com.gs.nta.api.OptionsPanelProvider;
-    uses com.gs.nta.api.SubMenuProvider;
+    public String getTextOverride();
     
-    provides com.gs.nta.api.AboutPanelProvider 
-            with com.gs.nta.accounting.desktop.AccountingAboutPanelProvider;
-    provides com.gs.nta.api.MenuProvider 
-            with com.gs.nta.accounting.menus.ManageMenuProvider;
-    provides com.gs.nta.api.OptionsPanelProvider 
-            with com.gs.nta.accounting.options.AccountingOptionsPanel;
+    public int getPosition();
+    
+    public int getButtonPosition();
+    
+    public String getOwner();
+    
+    public String getMethodName();
+    
+    public boolean separatorBeforeMenu();
+    
+    public boolean separatorAfterMenu();
+    
+    public boolean providesToolbarButton();
+    
+    public boolean separatorBeforeButton();
+    
+    public boolean separatorAfterButton();
 }
